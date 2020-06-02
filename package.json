@@ -1,0 +1,51 @@
+{
+  "name": "expediascrape",
+  "version": "1.0.0",
+  "description": "Scraper for expedia",
+  "main": "index.js",
+  "engines": {
+    "node": "^12.16.1"
+  },
+  "scripts": {
+    "deploy:full": "npm i && git submodule update --remote --recursive && cd car-frontend/ && yarn i && npm run build",
+    "deploy:frontend": "git pull && git submodule update --remote --recursive && cd car-frontend/ && npm run build",
+    "start": "node index.js",
+    "dev": "node index.js",
+    "debug": "NODE_DEBUG=app node index.js",
+    "debug:offline": "NODE_DEBUG=app OFFLINE=true node index.js",
+    "heroku-postbuild": "cd car-frontend && npm install --only=dev && npm install && npm run build"
+  },
+  "author": "batuhandirek",
+  "license": "ISC",
+  "dependencies": {
+    "advanced-json-path": "^1.0.8",
+    "axios": "^0.19.2",
+    "bcrypt": "^4.0.1",
+    "car-mobile-api-package": "file:./car-mobile-api-package",
+    "cors": "^2.8.5",
+    "dayjs": "^1.8.26",
+    "dotenv": "^8.2.0",
+    "express": "4.16.4",
+    "express-fileupload": "^1.1.7-alpha.3",
+    "express-jwt": "^5.3.1",
+    "express-jwt-permissions": "^1.3.3",
+    "generate-password": "^1.5.1",
+    "hybrid-crypto-js": "^0.2.2",
+    "is-json": "^2.0.1",
+    "json2xml": "0.1.3",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.25.3",
+    "mysql2": "^2.1.0",
+    "nested-property": "^2.0.0",
+    "nodemailer": "^6.4.6",
+    "nodemailer-smtp-transport": "^2.7.4",
+    "promise.allsettled": "^1.0.2",
+    "querystring": "^0.2.0",
+    "sequelize": "^5.21.5",
+    "xml-js": "^1.6.11",
+    "xmlbuilder2": "^2.1.2"
+  },
+  "devDependencies": {
+    "sqlite3": "^4.1.1"
+  }
+}

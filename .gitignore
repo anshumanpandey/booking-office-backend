@@ -1,0 +1,8 @@
+node_modules
+**/*.sqlite
+server.cert
+server.key
+/upload/*.png
+/upload/*.jpg
+.env
+.vscode
