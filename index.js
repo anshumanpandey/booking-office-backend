@@ -12,7 +12,7 @@ const config = require('./utils/Config');
 const routes = require('./routes/index');
 const fileUpload = require('express-fileupload');
 
-/*app.use(function(req, res, next) {
+app.use(function(req, res, next) {
   if (RegExp(`^/api`).test(req.originalUrl)) {
     var send = res.send;
     res.send = function(obj) {
@@ -21,7 +21,7 @@ const fileUpload = require('express-fileupload');
   }
   
   next();
-});*/
+});
 app.use(cors())
 app.use(fileUpload());
 const routesToByPass = [

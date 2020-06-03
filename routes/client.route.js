@@ -114,7 +114,7 @@ router.post('/login', AsyncMiddleware(async (req, res) => {
 }));
 
 router.get('/client', AsyncMiddleware(async (req, res) => {
-  const client = await BackOfficeUsersModel.findOne({
+  const client = await UserModel.findOne({
     where: { 'id': req.user.id },
     include: { all: true }
   });
@@ -123,7 +123,6 @@ router.get('/client', AsyncMiddleware(async (req, res) => {
 
   const c = client.toJSON();
   delete c.password
-  c.roleGuards = c.roleGuards.map(r => r.role)
   res.send(c);
 }));
 
