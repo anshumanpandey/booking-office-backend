@@ -1,0 +1,3 @@
+[submodule "bookingclik-backoffice"]
+	path = bookingclik-backoffice
+	url = https://github.com/anshumanpandey/bookingclik-backoffice

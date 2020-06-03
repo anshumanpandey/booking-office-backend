@@ -63,9 +63,9 @@ app.use(function (err, req, res, next) {
   }
 });
 
-/*app.get('*', (req, res, next) => {
-  res.sendFile(path.join(__dirname, 'car-frontend', '_site', 'my', 'app', 'index.html'));
-});*/
+app.get('*', (req, res, next) => {
+  res.sendFile(path.join(__dirname, 'bookingclik-backoffice', '_site', 'my', 'app', 'index.html'));
+});
 
 let port = process.env.PORT || 4010;
 
