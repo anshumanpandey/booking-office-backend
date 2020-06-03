@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const Sequelize = require('sequelize');
-const moment = require('moment');
 const AsyncMiddleware = require('../utils/AsyncMiddleware');
 const ClickTrack = require('../model/ClickTrack');
 

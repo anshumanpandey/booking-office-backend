@@ -18,10 +18,10 @@
   "author": "batuhandirek",
   "license": "ISC",
   "dependencies": {
+    "@paypal/checkout-server-sdk": "^1.0.2",
     "advanced-json-path": "^1.0.8",
     "axios": "^0.19.2",
     "bcrypt": "^4.0.1",
-    "car-mobile-api-package": "file:./car-mobile-api-package",
     "cors": "^2.8.5",
     "dayjs": "^1.8.26",
     "dotenv": "^8.2.0",
