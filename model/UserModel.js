@@ -48,6 +48,11 @@ const BackOfficeUser = sequelize.define('User', {
     type: Sequelize.STRING,
     allowNull: true,
   },
+  costPerClick: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    defaultValue: 1,
+  },
 }, { timestamps: true });
 
 BackOfficeUser.generateHash = function (password) {
