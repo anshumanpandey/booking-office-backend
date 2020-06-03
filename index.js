@@ -31,7 +31,7 @@ const routesToByPass = [
   '/api/brokers/importer', RegExp('api/public/*'),
   new RegExp(`categories/(${Offerings.join('|')})`)
 ];
-app.use(express.static(path.join(__dirname, 'car-frontend', '_site')));
+app.use(express.static(path.join(__dirname, 'bookingclik-backoffice', '_site')));
 app.use('/api/public/upload', express.static(path.join(__dirname, 'upload')));
 // to support URL-encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -64,7 +64,7 @@ app.use(function (err, req, res, next) {
 });
 
 app.get('*', (req, res, next) => {
-  res.sendFile(path.join(__dirname, 'bookingclik-backoffice', '_site', 'my', 'app', 'index.html'));
+  res.sendFile(path.join(__dirname, 'bookingclik-backoffice', '_site', 'index.html'));
 });
 
 let port = process.env.PORT || 4010;
