@@ -3,7 +3,7 @@ const router = express.Router();
 const Op = require('sequelize').Op;
 const AsyncMiddleware = require('../utils/AsyncMiddleware');
 
-router.post('/click', AsyncMiddleware(async (req, res) => {
+router.post('/public/click', AsyncMiddleware(async (req, res) => {
   const { supplierId } = req.body;
   if (!supplierId) throw new Error("Missing supplierId param");
 
@@ -11,7 +11,7 @@ router.post('/click', AsyncMiddleware(async (req, res) => {
 
   if (!user) throw new Error("Supplier not found");
 
-  await user.update({ credits: user.user - 1 });
+  await user.update({ credits: user.credits - 1 });
 
   res.send({});
 }));

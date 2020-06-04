@@ -24,13 +24,7 @@ app.use(function(req, res, next) {
 });
 app.use(cors())
 app.use(fileUpload());
-const routesToByPass = [
-  '/api/facebook', '/api/instagram', '/api/login',
-  /static/, '/api/', '/api/register', '/api/test',
-  '/api/search', '/api/getiatacodes', '/api/upload',
-  '/api/brokers/importer', RegExp('api/public/*'),
-  new RegExp(`categories/(${Offerings.join('|')})`)
-];
+const routesToByPass = [RegExp('api/public/*')];
 app.use(express.static(path.join(__dirname, 'bookingclik-backoffice', '_site')));
 app.use('/api/public/upload', express.static(path.join(__dirname, 'upload')));
 // to support URL-encoded bodies
