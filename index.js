@@ -13,7 +13,7 @@ const routes = require('./routes/index');
 const fileUpload = require('express-fileupload');
 
 app.use(function(req, res, next) {
-  if (RegExp(`^/api`).test(req.originalUrl)) {
+  if (RegExp(`^/api`).test(req.originalUrl) && !RegExp(`^/api/public`).test(req.originalUrl)) {
     var send = res.send;
     res.send = function(obj) {
       send.call(this, Encryption.encrypt(obj));
@@ -28,7 +28,7 @@ const routesToByPass = [
   '/api/facebook', '/api/instagram', '/api/login',
   /static/, '/api/', '/api/register', '/api/test',
   '/api/search', '/api/getiatacodes', '/api/upload',
-  '/api/brokers/importer', RegExp('api/public/*'),
+  '/api/brokers/importer', '/api/public/click',RegExp('/api/public/*'),
   new RegExp(`categories/(${Offerings.join('|')})`)
 ];
 app.use(express.static(path.join(__dirname, 'bookingclik-backoffice', '_site')));
