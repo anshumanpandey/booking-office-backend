@@ -1,8 +1,10 @@
 const express = require('express');
-const { Op } = require("sequelize");
 const router = express.Router();
 const AsyncMiddleware = require('../../utils/AsyncMiddleware');
+const Database = require('../../utils/Database');
+const { Op } = require("sequelize");
 const UserModel = require('../../model/UserModel');
+const BlacklistedCompany = require('../../model/BlacklistedCompany');
 const guard = require('express-jwt-permissions')({ permissionsProperty: 'type' });
 
 router.get('/super/client', guard.check('super_admin'), AsyncMiddleware(async (req, res) => {
@@ -42,8 +44,8 @@ router.post('/super/client', guard.check('super_admin'), AsyncMiddleware(async (
 }));
 
 router.put('/super/edit', guard.check('super_admin'), AsyncMiddleware(async (req, res) => {
-  const { credits, costPerClick, supplierId} = req.body;
-  if (!credits) throw new Error("Missing credits fields");
+  const { credits, costPerClick, supplierId, BlacklistedCompanies} = req.body;
+  if (!credits == undefined || credits == null) throw new Error("Missing credits fields");
   if (!costPerClick) throw new Error("Missing costPerClick fields");
   if (!supplierId) throw new Error("Missing supplierId fields");
 
@@ -51,7 +53,16 @@ router.put('/super/edit', guard.check('super_admin'), AsyncMiddleware(async (req
 
   if (!client) throw new Error("Supplier not found");
 
-  await UserModel.update({ credits, costPerClick }, { where: {id: supplierId}});
+  const justCreatedClient = await Database.transaction(async (t) => {
+    await UserModel.update({ credits, costPerClick }, { where: {id: supplierId}, transaction: t});
+
+    if (Array.isArray(BlacklistedCompanies)) {
+      await BlacklistedCompany.destroy({ where: { UserId: client.id }});
+      await BlacklistedCompany.bulkCreate(BlacklistedCompanies
+        .map(i => ({ companyName: i.companyName, UserId: client.id })), {transaction: t})
+
+    }
+  })
 
   res.send({ sucess: "Supplier updated"});
 }));
