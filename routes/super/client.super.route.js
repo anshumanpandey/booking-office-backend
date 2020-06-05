@@ -53,7 +53,7 @@ router.put('/super/edit', guard.check('super_admin'), AsyncMiddleware(async (req
 
   if (!client) throw new Error("Supplier not found");
 
-  await UserModel.update({ credits, costPerClick }, { where: {id: supplierId}});
+  await UserModel.update({ costPerClick }, { where: {id: supplierId}});
 
   res.send({ sucess: "Supplier updated"});
 }));
