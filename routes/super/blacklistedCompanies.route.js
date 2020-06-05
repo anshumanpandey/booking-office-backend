@@ -3,7 +3,7 @@ const router = express.Router();
 const AsyncMiddleware = require('../../utils/AsyncMiddleware');
 const BlacklistedCompany = require('../../model/BlacklistedCompany');
 
-router.get('/super/blacklist/', AsyncMiddleware(async (req, res) => {
+router.get('/public/super/blacklist/all', AsyncMiddleware(async (req, res) => {
     res.send(await BlacklistedCompany.findAll());
 }))
 

@@ -27,7 +27,7 @@ app.use(fileUpload());
 const routesToByPass = [
   '/api/facebook', '/api/instagram', '/api/login',
   /static/, '/api/', '/api/register', '/api/test',
-  '/api/search', '/api/getiatacodes', '/api/upload',
+  '/api/search', '/api/getiatacodes', '/api/super/blacklist/all',
   '/api/brokers/importer', '/api/public/click',RegExp('/api/public/*'),
   new RegExp(`categories/(${Offerings.join('|')})`)
 ];
