@@ -4,7 +4,7 @@ const AsyncMiddleware = require('../../utils/AsyncMiddleware');
 const Database = require('../../utils/Database');
 const { Op } = require("sequelize");
 const UserModel = require('../../model/UserModel');
-const BlacklistedCompany = require('../../model/BlacklistedCompany');
+const Decimal = require('decimal.js');
 const guard = require('express-jwt-permissions')({ permissionsProperty: 'type' });
 
 router.get('/super/client', guard.check('super_admin'), AsyncMiddleware(async (req, res) => {
@@ -44,16 +44,27 @@ router.post('/super/client', guard.check('super_admin'), AsyncMiddleware(async (
 }));
 
 router.put('/super/edit', guard.check('super_admin'), AsyncMiddleware(async (req, res) => {
-  const { credits, costPerClick, supplierId} = req.body;
-  if (!credits == undefined || credits == null) throw new Error("Missing credits fields");
-  if (!costPerClick) throw new Error("Missing costPerClick fields");
+  const { email, costPerClick, currencySymbol, supplierId} = req.body;
   if (!supplierId) throw new Error("Missing supplierId fields");
+  if (!email) throw new Error("Missing supplierId fields");
+  if (!costPerClick) throw new Error("Missing costPerClick fields");
+  if (!currencySymbol) throw new Error("Missing currencySymbol fields");
 
   const client = await UserModel.findByPk(supplierId);
 
   if (!client) throw new Error("Supplier not found");
 
-  await UserModel.update({ costPerClick }, { where: {id: supplierId}});
+  const newCost = new Decimal(costPerClick)
+  const balance = new Decimal(client.balance)
+
+  let newBalance = null
+
+  if (newCost.greaterThan(client.costPerClick) || newCost.lessThan(client.costPerClick)) {
+    const clientBalance = new Decimal(client.balance);
+    newBalance = clientBalance.dividedToIntegerBy(newCost) 
+  }
+
+  await UserModel.update({ costPerClick, email, currencySymbol, balance: newBalance.toNumber() }, { where: {id: supplierId}});
 
   res.send({ sucess: "Supplier updated"});
 }));

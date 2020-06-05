@@ -19,7 +19,7 @@ router.post('/public/click', AsyncMiddleware(async (req, res) => {
 
     if (user.credits > 0) {
       await ClickTrackModel.create({ ip, country: country_code, UserId: user.id }, { transaction: t });
-      await user.update({ credits: user.credits - 1 }, { transaction: t });
+      await user.update({ credits: user.credits - user.costPerClick }, { transaction: t });
     } else {
       throw new Error("Service not available");
     }
