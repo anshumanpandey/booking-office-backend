@@ -58,6 +58,11 @@ const BackOfficeUser = sequelize.define('User', {
     allowNull: false,
     defaultValue: 0,
   },
+  balance: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  },
   currencySymbol: {
     type: Sequelize.STRING,
     allowNull: false,

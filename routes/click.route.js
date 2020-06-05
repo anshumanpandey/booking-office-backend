@@ -5,6 +5,7 @@ const AsyncMiddleware = require('../utils/AsyncMiddleware');
 const UserModel = require('../model/UserModel');
 const ClickTrackModel = require('../model/ClickTrack');
 const sequelize = require('../utils/Database');
+const Decimal = require('decimal.js');
 
 router.post('/public/click', AsyncMiddleware(async (req, res) => {
   const { company_name, country_code, ip } = req.body;
@@ -19,7 +20,7 @@ router.post('/public/click', AsyncMiddleware(async (req, res) => {
 
     if (user.credits > 0) {
       await ClickTrackModel.create({ ip, country: country_code, UserId: user.id }, { transaction: t });
-      await user.update({ credits: user.credits - user.costPerClick }, { transaction: t });
+      await user.update({ credits: new Decimal(user.credits).minus(user.costPerClick), balance: new Decimal(user.balance).minus(user.costPerClick) }, { transaction: t });
     } else {
       throw new Error("Service not available");
     }
