@@ -63,10 +63,6 @@ const BackOfficeUser = sequelize.define('User', {
     allowNull: false,
     defaultValue: '$',
   },
-  grcgdsId: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
 }, { timestamps: true });
 
 BackOfficeUser.generateHash = function (password) {
