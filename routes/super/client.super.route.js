@@ -55,16 +55,15 @@ router.put('/super/edit', guard.check('super_admin'), AsyncMiddleware(async (req
   if (!client) throw new Error("Supplier not found");
 
   const newCost = new Decimal(costPerClick)
-  const balance = new Decimal(client.balance)
 
-  let newBalance = null
+  let newCredits = null
 
   if (newCost.greaterThan(client.costPerClick) || newCost.lessThan(client.costPerClick)) {
-    const clientBalance = new Decimal(client.balance);
-    newBalance = clientBalance.dividedToIntegerBy(newCost) 
+    const clientBalance = new Decimal(client.credits);
+    newCredits = clientBalance.dividedToIntegerBy(newCost) 
   }
 
-  await UserModel.update({ costPerClick, email, currencySymbol, balance: newBalance.toNumber() }, { where: {id: supplierId}});
+  await UserModel.update({ costPerClick, email, currencySymbol, credits: newBalance.toNumber() }, { where: {id: supplierId}});
 
   res.send({ sucess: "Supplier updated"});
 }));
