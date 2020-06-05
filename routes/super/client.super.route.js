@@ -59,11 +59,19 @@ router.put('/super/edit', guard.check('super_admin'), AsyncMiddleware(async (req
   let newCredits = null
 
   if (newCost.greaterThan(client.costPerClick) || newCost.lessThan(client.costPerClick)) {
+<<<<<<< HEAD
     const clientCredits = new Decimal(client.credits);
     newCredits = clientCredits.dividedToIntegerBy(newCost) 
   }
 
   await UserModel.update({ costPerClick, email, currencySymbol, credits: newCredits.toNumber() }, { where: {id: supplierId}});
+=======
+    const clientBalance = new Decimal(client.credits);
+    newCredits = clientBalance.dividedToIntegerBy(newCost) 
+  }
+
+  await UserModel.update({ costPerClick, email, currencySymbol, credits: newBalance.toNumber() }, { where: {id: supplierId}});
+>>>>>>> 1c5143eb38d6a284a8d14add440f7bcb228f41c8
 
   res.send({ sucess: "Supplier updated"});
 }));
