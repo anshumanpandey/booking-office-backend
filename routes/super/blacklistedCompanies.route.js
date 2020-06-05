@@ -8,10 +8,10 @@ router.get('/public/super/blacklist/all', AsyncMiddleware(async (req, res) => {
 }))
 
 router.post('/super/blacklist/', AsyncMiddleware(async (req, res) => {
-    const { companies } = req.body;
-    if (companies.some(i => !i.companyName)) throw new Error("Invalid body");
+    const { company } = req.body;
+    if (!company) throw new Error("Missing company");
     
-    await BlacklistedCompany.bulkCreate(companies.map(i => ({ companyName: i.companyName })))
+    await BlacklistedCompany.create(company)
 
     res.send({});
 }))
