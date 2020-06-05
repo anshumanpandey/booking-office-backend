@@ -44,11 +44,12 @@ router.post('/super/client', guard.check('super_admin'), AsyncMiddleware(async (
 }));
 
 router.put('/super/edit', guard.check('super_admin'), AsyncMiddleware(async (req, res) => {
-  const { email, costPerClick, currencySymbol, supplierId} = req.body;
+  const { email, costPerClick, currencySymbol, supplierId, companyName} = req.body;
   if (!supplierId) throw new Error("Missing supplierId fields");
   if (!email) throw new Error("Missing supplierId fields");
   if (!costPerClick) throw new Error("Missing costPerClick fields");
   if (!currencySymbol) throw new Error("Missing currencySymbol fields");
+  if (!companyName) throw new Error("Missing companyName fields");
 
   const client = await UserModel.findByPk(supplierId);
 
@@ -56,14 +57,14 @@ router.put('/super/edit', guard.check('super_admin'), AsyncMiddleware(async (req
 
   const newCost = new Decimal(costPerClick)
 
-  let newCredits = null
+  let newCredits = new Decimal(client.credits);
 
   if (newCost.greaterThan(client.costPerClick) || newCost.lessThan(client.costPerClick)) {
     const clientCredits = new Decimal(client.credits);
     newCredits = clientCredits.dividedToIntegerBy(newCost) 
   }
 
-  await UserModel.update({ costPerClick, email, currencySymbol, credits: newCredits.toNumber() }, { where: {id: supplierId}});
+  await UserModel.update({ companyName, costPerClick, email, currencySymbol, credits: newCredits.toNumber() }, { where: {id: supplierId}});
 
   res.send({ sucess: "Supplier updated"});
 }));
