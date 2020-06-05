@@ -58,6 +58,11 @@ const BackOfficeUser = sequelize.define('User', {
     allowNull: false,
     defaultValue: 0,
   },
+  currencySymbol: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    defaultValue: '$',
+  },
   grcgdsId: {
     type: Sequelize.STRING,
     allowNull: true,
