@@ -4,6 +4,7 @@ const Op = require('sequelize').Op;
 const AsyncMiddleware = require('../utils/AsyncMiddleware');
 const UserModel = require('../model/UserModel');
 const ClickTrackModel = require('../model/ClickTrack');
+const sequelize = require('../utils/Database');
 
 router.post('/public/click', AsyncMiddleware(async (req, res) => {
   const { company_name, country_code, ip } = req.body;
