@@ -13,6 +13,10 @@ const ClickTrack = sequelize.define('ClickTrack', {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  supplierName: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
   created_at: {
     type: Sequelize.STRING,
     defaultValue: function() {
