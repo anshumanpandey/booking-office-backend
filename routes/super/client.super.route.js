@@ -38,6 +38,9 @@ router.post('/super/client', guard.check('super_admin'), AsyncMiddleware(async (
   if (password !== confirmPassword) throw new Error("Password not match");
   if (!(new RegExp('(supplier|broker)')).test(type)) throw new Error("invalid type");
 
+  delete req.body.balance
+  delete req.body.credits
+
   await UserModel.create({ password: await UserModel.generateHash(password), ...req.body});
 
   res.send({ sucess: "Supplier created"});
@@ -69,6 +72,12 @@ router.put('/super/edit', guard.check('super_admin'), AsyncMiddleware(async (req
   if (password) {
     extra.password = await UserModel.generateHash(password)
   }
+
+  delete req.body.balance
+  delete req.body.credits
+  delete req.body.id
+  delete req.body.costPerClick
+  delete req.body.type
 
   await UserModel.update({ credits: newCredits.toNumber(), ...req.body, ...extra }, { where: {id: supplierId}});
 
