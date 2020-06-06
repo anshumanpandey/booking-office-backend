@@ -75,8 +75,6 @@ router.put('/super/edit', guard.check('super_admin'), AsyncMiddleware(async (req
 
   delete req.body.balance
   delete req.body.credits
-  delete req.body.id
-  delete req.body.costPerClick
   delete req.body.type
 
   await UserModel.update({ credits: newCredits.toNumber(), ...req.body, ...extra }, { where: {id: supplierId}});
