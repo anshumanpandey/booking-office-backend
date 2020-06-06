@@ -3,10 +3,18 @@ const nodemailer = require("nodemailer");
 module.exports.sendForgotEmail = async (to) => {
   // create reusable transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
-    host: "bookingclik.com",
-    port: 25,
+    host: "151.236.35.187",
+    port: 465,
+    secure: true,
+    auth: {
+      user: 'noreply@bookingclik.com', // generated ethereal user
+      pass: 'pass', // generated ethereal password
+    },
     maxConnections: 5,
-    maxMessages: 10
+    maxMessages: 10,
+    tls: {
+      rejectUnauthorized: false
+  },
   });
 
   // send mail with defined transport object
