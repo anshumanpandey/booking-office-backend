@@ -4,7 +4,7 @@ const Op = require('sequelize').Op;
 const AsyncMiddleware = require('../utils/AsyncMiddleware');
 const path = require('path');
 const axios = require('axios');
-const querystring = require('querystring');
+const mailer = require('../utils/Nodemailer');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const config = require('../utils/Config');
@@ -108,6 +108,24 @@ router.put('/edit', AsyncMiddleware(async (req, res) => {
   await UserModel.update({ ...req.body, ...extra }, { where: {id: supplierId}});
 
   res.send(await UserModel.findByPk(supplierId));
+}));
+
+router.post('/public/forgotPassword', AsyncMiddleware(async (req, res) => {
+  const { email } = req.body;
+  if (!email)  throw new Error('Missing email');
+
+  const client = await UserModel.findOne({ where: { email }});
+
+  if (!client) return res.send({});
+
+  const resetPasswordToken = jwt.sign({
+    id: client.id
+  }, config.JWT_SECRET, { expiresIn: '1h' });
+
+  await mailer.sendForgotEmail(email);
+  await UserModel.update({ resetPasswordToken }, { where: { id: client.id }})
+
+  res.send({ sucess: "If your email exists we send you an email"});
 }));
 
 

@@ -68,6 +68,10 @@ const BackOfficeUser = sequelize.define('User', {
     allowNull: false,
     defaultValue: '$',
   },
+  resetPasswordToken: {
+    type: Sequelize.STRING(500),
+    allowNull: true,
+  }
 }, { timestamps: true });
 
 BackOfficeUser.generateHash = function (password) {

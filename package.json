@@ -38,7 +38,7 @@
     "moment": "^2.25.3",
     "mysql2": "^2.1.0",
     "nested-property": "^2.0.0",
-    "nodemailer": "^6.4.6",
+    "nodemailer": "^6.4.8",
     "nodemailer-smtp-transport": "^2.7.4",
     "promise.allsettled": "^1.0.2",
     "querystring": "^0.2.0",
