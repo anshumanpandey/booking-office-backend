@@ -38,13 +38,13 @@ router.post('/super/client', guard.check('super_admin'), AsyncMiddleware(async (
   if (password !== confirmPassword) throw new Error("Password not match");
   if (!(new RegExp('(supplier|broker)')).test(type)) throw new Error("invalid type");
 
-  await UserModel.create({ email, password: await UserModel.generateHash(password), type, costPerClick});
+  await UserModel.create({ password: await UserModel.generateHash(password), ...req.body});
 
   res.send({ sucess: "Supplier created"});
 }));
 
 router.put('/super/edit', guard.check('super_admin'), AsyncMiddleware(async (req, res) => {
-  const { email, costPerClick, currencySymbol, supplierId, companyName} = req.body;
+  const { email, costPerClick, currencySymbol, supplierId, companyName, password, confirmPassword} = req.body;
   if (!supplierId) throw new Error("Missing supplierId fields");
   if (!email) throw new Error("Missing supplierId fields");
   if (!costPerClick) throw new Error("Missing costPerClick fields");
@@ -64,7 +64,13 @@ router.put('/super/edit', guard.check('super_admin'), AsyncMiddleware(async (req
     newCredits = clientCredits.dividedToIntegerBy(newCost) 
   }
 
-  await UserModel.update({ companyName, costPerClick, email, currencySymbol, credits: newCredits.toNumber() }, { where: {id: supplierId}});
+  const extra = {}
+  if (password !== confirmPassword) throw new Error("Password not match");
+  if (password) {
+    extra.password = await UserModel.generateHash(password)
+  }
+
+  await UserModel.update({ credits: newCredits.toNumber(), ...req.body, ...extra }, { where: {id: supplierId}});
 
   res.send({ sucess: "Supplier updated"});
 }));
