@@ -6,8 +6,10 @@ const payments = require('./payments.route');
 const ClientRoute = require('./client.route');
 const ClickRoute = require('./click.route');
 const superClient = require('./super/client.super.route');
-const blacklisted = require('./super/blacklistedCompanies.route');
+const blacklistedSuper = require('./super/blacklistedCompanies.route');
+const blacklisted = require('./blacklistedCompanies.route');
 
+router.use(blacklistedSuper);
 router.use(blacklisted);
 router.use(ClickRoute);
 router.use(MyClicks);
