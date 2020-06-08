@@ -66,7 +66,7 @@ const BackOfficeUser = sequelize.define('User', {
   currencySymbol: {
     type: Sequelize.STRING,
     allowNull: false,
-    defaultValue: '$',
+    defaultValue: '£',
   },
   resetPasswordToken: {
     type: Sequelize.STRING(500),
