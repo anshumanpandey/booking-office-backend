@@ -1,11 +1,18 @@
 const express = require('express');
 const router = express.Router();
+const { Op } = require("sequelize");
 const AsyncMiddleware = require('../../utils/AsyncMiddleware');
 const BlacklistedCompany = require('../../model/BlacklistedCompany');
 const UserModel = require('../../model/UserModel');
 
 router.get('/public/super/blacklist/all', AsyncMiddleware(async (req, res) => {
-    res.send(await BlacklistedCompany.findAll());
+    const companies = await UserModel.findAll({ where: { [Op.or]: [{ type: 'supplier' }, { type: 'broker' }] }, include: [{ model: BlacklistedCompany }]});
+    res.send(companies.map(c => {
+        return {
+            supplierName: c.companyName,
+            companies: c.BlacklistedCompanies.map(c => c.companyName),
+        }
+    }));
 }))
 
 router.post('/super/blacklist/', AsyncMiddleware(async (req, res) => {
