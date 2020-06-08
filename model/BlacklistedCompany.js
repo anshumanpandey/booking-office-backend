@@ -11,4 +11,12 @@ const BlacklistedCompany = sequelize.define('BlacklistedCompany', {
   },
 }, { timestamps: true });
 
+UserModel.hasMany(BlacklistedCompany, {
+  foreignKey: {
+    allowNull: false
+  }
+});
+
+BlacklistedCompany.belongsTo(UserModel);
+
 module.exports = BlacklistedCompany

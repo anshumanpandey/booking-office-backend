@@ -2,16 +2,20 @@ const express = require('express');
 const router = express.Router();
 const AsyncMiddleware = require('../../utils/AsyncMiddleware');
 const BlacklistedCompany = require('../../model/BlacklistedCompany');
+const UserModel = require('../../model/UserModel');
 
 router.get('/public/super/blacklist/all', AsyncMiddleware(async (req, res) => {
     res.send(await BlacklistedCompany.findAll());
 }))
 
 router.post('/super/blacklist/', AsyncMiddleware(async (req, res) => {
-    const { company } = req.body;
-    if (!company) throw new Error("Missing company");
+    const { companyName, UserId } = req.body;
+    if (!companyName) throw new Error("Missing companyName");
+    if (!UserId) throw new Error("Missing UserId");
+
+    if (!await UserModel.findByPk(UserId)) throw new Error ("User not found");
     
-    await BlacklistedCompany.create(company)
+    await BlacklistedCompany.create({ companyName, UserId})
 
     res.send({});
 }))

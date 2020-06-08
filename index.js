@@ -8,6 +8,7 @@ const Encryption = require('./utils/Encryption');
 const cors = require('cors')
 const path = require('path');
 const db = require('./utils/Database');
+const BlacklistedCompany = require('./model/BlacklistedCompany');
 const config = require('./utils/Config');
 const routes = require('./routes/index');
 const fileUpload = require('express-fileupload');
