@@ -8,7 +8,9 @@ const ClickRoute = require('./click.route');
 const superClient = require('./super/client.super.route');
 const blacklistedSuper = require('./super/blacklistedCompanies.route');
 const blacklisted = require('./blacklistedCompanies.route');
+const visitor = require('./visitor.route');
 
+router.use(visitor);
 router.use(blacklistedSuper);
 router.use(blacklisted);
 router.use(ClickRoute);
