@@ -18,7 +18,7 @@ router.post('/public/visitor/save', AsyncMiddleware(async (req, res) => {
   res.send({});
 }));
 
-router.get('/public/visitor/get', AsyncMiddleware(async (req, res) => {
+router.get('/visitor/get', AsyncMiddleware(async (req, res) => {
   res.send(await VisitorModel.findAll());
 }));
 
