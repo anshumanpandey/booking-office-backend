@@ -49,7 +49,7 @@ const BackOfficeUser = sequelize.define('User', {
     allowNull: true,
   },
   costPerClick: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.DECIMAL,
     allowNull: false,
     defaultValue: 1,
   },
@@ -59,7 +59,7 @@ const BackOfficeUser = sequelize.define('User', {
     defaultValue: 0,
   },
   balance: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.DECIMAL,
     allowNull: false,
     defaultValue: 0,
   },

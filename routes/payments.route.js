@@ -40,7 +40,7 @@ router.post('/paypal-transaction-complete', AsyncMiddleware(async (req, res) => 
     if (!user) throw new Error('User not found!');
 
     const credits = user.credits + (order.result.purchase_units[0].amount.value * req.user.costPerClick)
-    await UserModel.update({ credits, balance: new Decimal(user.balance).plus(order.result.purchase_units[0].amount.value) }, { where: { id: req.user.id }, transaction: t });
+    await UserModel.update({ credits, balance: new Decimal(user.balance).plus(order.result.purchase_units[0].amount.value).toFixed(2) }, { where: { id: req.user.id }, transaction: t });
     const createdPayment = await PaymentModel.create({ orderId: req.body.orderId, UserId: req.user.id, amount: order.result.purchase_units[0].amount.value }, { transaction: t });
 
     res.send(createdPayment);
