@@ -11,18 +11,18 @@ const Decimal = require('decimal.js');
 router.post('/paypal-transaction-complete', AsyncMiddleware(async (req, res) => {
   let request = new checkoutNodeJssdk.orders.OrdersGetRequest(req.body.orderId);
 
-  /*
-  TEST credentials
+  
+  //TEST credentials
   const CLIENT_ID = 'AcDoYg60CAk48yIdgpLTKR8h99G9sdv_Xmdg8jzd8HTla_01m29inTc7d-kT5MdRwYcnpq5GmrdXbt4A';
   const CLIENT_SECRET = 'ENs8H1feFUXDKdKOf3WZbqpFOempJlLR13ntsM7VwzuaJIzK-aRuRh_z9yVS2zuCldnTDyj19elOdZFO';
   const enviroment = new checkoutNodeJssdk.core.SandboxEnvironment(CLIENT_ID,CLIENT_SECRET)
-  */
+  
   
 
-  const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
+  /*const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
   const CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
   const enviroment = new checkoutNodeJssdk.core.LiveEnvironment(CLIENT_ID, CLIENT_SECRET)
-
+*/
   const payPalClient = new checkoutNodeJssdk.core.PayPalHttpClient(enviroment);
 
   let order;
@@ -40,7 +40,8 @@ router.post('/paypal-transaction-complete', AsyncMiddleware(async (req, res) => 
     if (!user) throw new Error('User not found!');
 
     const credits = user.credits + (order.result.purchase_units[0].amount.value * req.user.costPerClick)
-    await UserModel.update({ credits, balance: new Decimal(user.balance).plus(order.result.purchase_units[0].amount.value).toFixed(2) }, { where: { id: req.user.id }, transaction: t });
+    const balance =  new Decimal(user.balance).plus(order.result.purchase_units[0].amount.value).toFixed(2)
+    await UserModel.update({ credits, balance }, { where: { id: req.user.id }, transaction: t });
     const createdPayment = await PaymentModel.create({ orderId: req.body.orderId, UserId: req.user.id, amount: order.result.purchase_units[0].amount.value }, { transaction: t });
 
     res.send(createdPayment);
