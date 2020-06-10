@@ -13,6 +13,10 @@ const PaymentModel = sequelize.define('Payment', {
     type: Sequelize.STRING,
     allowNull: true,
   },
+  buyedItem: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
 }, { timestamps: true });
 
 UserModel.hasMany(PaymentModel, {

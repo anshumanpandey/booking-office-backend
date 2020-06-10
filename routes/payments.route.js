@@ -16,8 +16,6 @@ router.post('/paypal-transaction-complete', AsyncMiddleware(async (req, res) => 
   /*const CLIENT_ID = 'AcDoYg60CAk48yIdgpLTKR8h99G9sdv_Xmdg8jzd8HTla_01m29inTc7d-kT5MdRwYcnpq5GmrdXbt4A';
   const CLIENT_SECRET = 'ENs8H1feFUXDKdKOf3WZbqpFOempJlLR13ntsM7VwzuaJIzK-aRuRh_z9yVS2zuCldnTDyj19elOdZFO';
   const enviroment = new checkoutNodeJssdk.core.SandboxEnvironment(CLIENT_ID,CLIENT_SECRET)*/
-  
-  
 
   const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
   const CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
@@ -42,7 +40,9 @@ router.post('/paypal-transaction-complete', AsyncMiddleware(async (req, res) => 
     const credits = user.credits + (order.result.purchase_units[0].amount.value * req.user.costPerClick)
     const balance =  new Decimal(user.balance).plus(order.result.purchase_units[0].amount.value).toFixed(2)
     await UserModel.update({ credits, balance }, { where: { id: req.user.id }, transaction: t });
-    const createdPayment = await PaymentModel.create({ orderId: req.body.orderId, UserId: req.user.id, amount: order.result.purchase_units[0].amount.value }, { transaction: t });
+    
+    const paymentData = { orderId: req.body.orderId, UserId: req.user.id, amount: order.result.purchase_units[0].amount.value, buyedItem: 'Credits' }
+    const createdPayment = await PaymentModel.create(paymentData, { transaction: t });
 
     res.send(createdPayment);
   })

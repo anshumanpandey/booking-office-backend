@@ -14,11 +14,29 @@ const BannerModel = sequelize.define('Banner', {
     allowNull: false,
     require: true,
   },
+  amount: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    require: true,
+  },
   paymentFrequency: {
     type: Sequelize.STRING,
     allowNull: false,
     require: true,
   },
+  paypalId: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    require: true,
+  },
 }, { timestamps: true });
+
+UserModel.hasMany(BannerModel, {
+  foreignKey: {
+    allowNull: false
+  }
+});
+
+BannerModel.belongsTo(UserModel);
 
 module.exports = BannerModel
