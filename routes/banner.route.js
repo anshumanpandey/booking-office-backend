@@ -3,6 +3,7 @@ const router = express.Router();
 const AsyncMiddleware = require('../utils/AsyncMiddleware');
 const BannerModel = require('../model/BannerModel');
 const PaymentModel = require('../model/PaymentsModel');
+const UserModel = require('../model/UserModel');
 const checkoutNodeJssdk = require('@paypal/checkout-server-sdk');
 const sequelize = require('../utils/Database');
 
@@ -51,7 +52,15 @@ router.post('/banners-payment', AsyncMiddleware(async (req, res) => {
 }));
 
 router.get('/banner/get', AsyncMiddleware(async (req, res) => {
-  res.send(await BannerModel.findAll());
+  const data = await BannerModel.findAll({ include: [{ model: UserModel }]})
+  res.send(data.map(i => i.toJSON()).map(item => {
+    return {
+      ...item,
+      User: {
+        firstName: item.User.firstName
+      }
+    }
+  }));
 }));
 
 
