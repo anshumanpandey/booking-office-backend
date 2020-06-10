@@ -22,7 +22,6 @@ router.put('/banner-meta/save', guard.check('super_admin'), AsyncMiddleware(asyn
     if (!await BannerMetaModel.findByPk(req.body.id)) throw new Error("Banner metadata not found");
 
     const toSave = {
-        locationName: req.body.locationName,
         availableAmount: req.body.availableAmount,
         price: req.body.price,
     }
