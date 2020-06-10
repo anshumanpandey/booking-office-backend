@@ -52,7 +52,7 @@ router.post('/banners-payment', AsyncMiddleware(async (req, res) => {
 }));
 
 router.get('/banner/get', AsyncMiddleware(async (req, res) => {
-  const data = await BannerModel.findAll({ include: [{ model: UserModel }]})
+  const data = await BannerModel.findAll({ where: { UserId: req.user.id },include: [{ model: UserModel }]})
   res.send(data.map(i => i.toJSON()).map(item => {
     return {
       ...item,
