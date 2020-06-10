@@ -17,7 +17,7 @@ router.post('/banners-payment', AsyncMiddleware(async (req, res) => {
   //TEST credentials
   const CLIENT_ID = 'AcDoYg60CAk48yIdgpLTKR8h99G9sdv_Xmdg8jzd8HTla_01m29inTc7d-kT5MdRwYcnpq5GmrdXbt4A';
   const CLIENT_SECRET = 'ENs8H1feFUXDKdKOf3WZbqpFOempJlLR13ntsM7VwzuaJIzK-aRuRh_z9yVS2zuCldnTDyj19elOdZFO';
-  const enviroment = new checkoutNodeJssdk.core.SandboxEnvironment(CLIENT_ID,CLIENT_SECRET)
+  const enviroment = new checkoutNodeJssdk.core.SandboxEnvironment(CLIENT_ID, CLIENT_SECRET)
 
   /*const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
   const CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
@@ -36,12 +36,41 @@ router.post('/banners-payment', AsyncMiddleware(async (req, res) => {
 
   await sequelize.transaction(async (t) => {
     const bannersToUpdate = await BannerMetaModel
-      .findAll({ where: { id: req.body.selectedLocations.map(l => l.id) }}, { transaction: t });
-    await BannerMetaPurchasedModel.bulkCreate(req.body.selectedLocations.map((l) => {
+      .findAll({
+        where: { id: req.body.selectedLocations.map(l => l.id) }, include: [
+          {
+            model: BannerMetaPurchasedModel,
+            attributes: ['availableFromDate', 'availableToDate'],
+          }
+        ], transaction: t
+      });
+    await BannerMetaPurchasedModel.bulkCreate(req.body.selectedLocations.map((l, idx, arr) => {
+      const currentBannerMetadata = bannersToUpdate.find(currentBanner => currentBanner.id == l.id)
+      if (!currentBannerMetadata) throw new Error("We could not find the banner.")
+
+      const isFilled = currentBannerMetadata.BannerPurchaseds.some(purchasedBanner => {
+        const availableFromDate = moment(purchasedBanner.availableFromDate)
+        const availableToDate = moment(purchasedBanner.availableToDate)
+        const isBetween = moment.unix(l.fromDate).utc().isBetween(availableFromDate, availableToDate, undefined, '[]') ||
+          moment.unix(l.toDate).utc().isBetween(availableFromDate, availableToDate, undefined, '[]');
+        const isInside = availableFromDate.isBetween(l.fromDate, l.toDate, undefined, '[]') ||
+          availableToDate.isBetween(l.fromDate, l.toDate, undefined, '[]');
+        return (isBetween || isInside)
+      })
+
+      if (isFilled) throw new Error("The selected date range is already used")
+
+
+      const availableFromDate = moment.unix(l.fromDate).utc();
+      const availableToDate = moment.unix(l.toDate).utc();
+
+      if (availableFromDate.isAfter(availableToDate)) throw new Error('Start date cannot be after end date');
+      if (availableToDate.isBefore(availableFromDate)) throw new Error('End date cannot be before start date');
+
       const data = {
-        availableFromDate: moment.unix(l.fromDate).utc().toDate(),
-        availableToDate: moment.unix(l.toDate).utc().toDate(),
-        paypalId: req.body.orderId,
+        availableFromDate: availableFromDate.toDate(),
+        availableToDate: availableToDate.toDate(),
+        paypalOrderId: req.body.orderId,
         UserId: req.user.id,
         BannerMetumId: l.id
       }
@@ -49,8 +78,8 @@ router.post('/banners-payment', AsyncMiddleware(async (req, res) => {
       return data;
     }), { transaction: t })
 
-    await Promise.all(bannersToUpdate.map(b => b.update({availableAmount: b.availableAmount - 1}, {transaction: t})))
-    
+    await Promise.all(bannersToUpdate.map(b => b.update({ availableAmount: b.availableAmount - 1 }, { transaction: t })))
+
     const paymentData = { orderId: req.body.orderId, UserId: req.user.id, amount: order.result.purchase_units[0].amount.value, buyedItem: 'Ads' }
     const createdPayment = await PaymentModel.create(paymentData, { transaction: t });
 

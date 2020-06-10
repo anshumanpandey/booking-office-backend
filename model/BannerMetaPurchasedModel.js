@@ -15,6 +15,11 @@ const BannerPurchasedModel = sequelize.define('BannerPurchased', {
     allowNull: true,
     require: false,
   },
+  paypalOrderId: {
+    type: Sequelize.STRING,
+    allowNull: true,
+    require: false,
+  },
 }, { timestamps: true });
 
 BannerMetaModel.hasMany(BannerPurchasedModel, {
