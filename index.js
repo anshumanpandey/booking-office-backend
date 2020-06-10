@@ -8,7 +8,7 @@ const Encryption = require('./utils/Encryption');
 const cors = require('cors')
 const path = require('path');
 const db = require('./utils/Database');
-const BannerModel = require('./model/BannerModel');
+const BannerMetaModel = require('./model/BannerMetaModel');
 const config = require('./utils/Config');
 const routes = require('./routes/index');
 const fileUpload = require('express-fileupload');
@@ -73,7 +73,7 @@ let port = process.env.PORT || 4010;
 
 db
   .authenticate()
-  //.then(() => BannerModel.sync())
+  //.then(() => BannerMetaModel.sync())
   .then(() => {
     app.listen(port, '0.0.0.0', () => console.log('App listening on port ' + port))
 
