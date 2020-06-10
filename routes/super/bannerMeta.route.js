@@ -3,11 +3,18 @@ const router = express.Router();
 const axios = require('axios');
 const AsyncMiddleware = require('../../utils/AsyncMiddleware');
 const BannerMetaModel = require('../../model/BannerMetaModel');
+const BannerMetaPurchasedModel = require('../../model/BannerMetaPurchasedModel');
 const Encryption = require('../../utils/Encryption');
 const guard = require('express-jwt-permissions')({ permissionsProperty: 'type' });
 
-router.get('/banner-meta/get', guard.check('super_admin'), AsyncMiddleware(async (req, res) => {
-    res.send(await BannerMetaModel.findAll());
+router.get('/banner-meta/get', guard.check([ ['super_admin'], ['supplier'],['broker'] ]), AsyncMiddleware(async (req, res) => {
+    const data = await BannerMetaModel.findAll({ include: [
+        {
+            model: BannerMetaPurchasedModel,
+            attributes: ['availableFromDate', 'availableToDate'],
+        }
+    ]});
+    res.send(data);
 }));
 
 router.put('/banner-meta/save', guard.check('super_admin'), AsyncMiddleware(async (req, res) => {
@@ -41,9 +48,8 @@ axios.default({
         return {
             locationName: l.locationname,
             availableAmount: 6,
+            country: l.country,
             price: l.locationname.toLowerCase().match(/(airport)/) ? 5 : 2,
-            availableFromDate: null,
-            availableToDate: null,
         }
     }));
 })

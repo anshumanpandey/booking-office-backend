@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const moment = require('moment');
 const AsyncMiddleware = require('../utils/AsyncMiddleware');
-const BannerModel = require('../model/BannerModel');
+const BannerMetaPurchasedModel = require('../model/BannerMetaPurchasedModel');
+const BannerMetaModel = require('../model/BannerMetaModel');
 const PaymentModel = require('../model/PaymentsModel');
 const UserModel = require('../model/UserModel');
 const checkoutNodeJssdk = require('@paypal/checkout-server-sdk');
@@ -33,16 +35,22 @@ router.post('/banners-payment', AsyncMiddleware(async (req, res) => {
   }
 
   await sequelize.transaction(async (t) => {
-    await BannerModel.bulkCreate(req.body.selectedLocations.map((l) => {
-      return {
-        country: req.body.country,
-        location: l.locationName,
-        amount: l.amount,
-        paymentFrequency: l.frequency,
+    const bannersToUpdate = await BannerMetaModel
+      .findAll({ where: { id: req.body.selectedLocations.map(l => l.id) }}, { transaction: t });
+    await BannerMetaPurchasedModel.bulkCreate(req.body.selectedLocations.map((l) => {
+      const data = {
+        availableFromDate: moment.unix(l.fromDate).utc().toDate(),
+        availableToDate: moment.unix(l.toDate).utc().toDate(),
         paypalId: req.body.orderId,
-        UserId: req.user.id
+        UserId: req.user.id,
+        BannerMetumId: l.id
       }
+
+      return data;
     }), { transaction: t })
+
+    await Promise.all(bannersToUpdate.map(b => b.update({availableAmount: b.availableAmount - 1}, {transaction: t})))
+    
     const paymentData = { orderId: req.body.orderId, UserId: req.user.id, amount: order.result.purchase_units[0].amount.value, buyedItem: 'Ads' }
     const createdPayment = await PaymentModel.create(paymentData, { transaction: t });
 
@@ -52,15 +60,23 @@ router.post('/banners-payment', AsyncMiddleware(async (req, res) => {
 }));
 
 router.get('/banner/get', AsyncMiddleware(async (req, res) => {
-  const data = await BannerModel.findAll({ where: { UserId: req.user.id },include: [{ model: UserModel }]})
-  res.send(data.map(i => i.toJSON()).map(item => {
+  const data = await BannerMetaPurchasedModel.findAll({
+    where: { UserId: req.user.id },
+    include: { all: true }
+  })
+  const toSend = data.map(d => {
     return {
-      ...item,
+      ...d.toJSON(),
       User: {
-        firstName: item.User.firstName
+        firstName: d.User.firstName
+      },
+      BannerMetum: {
+        locationName: d.BannerMetum.locationName,
+        country: d.BannerMetum.country
       }
     }
-  }));
+  })
+  res.send(toSend);
 }));
 
 

@@ -1,5 +1,7 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../utils/Database');
+const UserModel = require('./UserModel');
+const BannerMetaModel = require('./BannerMetaModel');
 
 const BannerPurchasedModel = sequelize.define('BannerPurchased', {
   // attributes
@@ -15,12 +17,19 @@ const BannerPurchasedModel = sequelize.define('BannerPurchased', {
   },
 }, { timestamps: true });
 
+BannerMetaModel.hasMany(BannerPurchasedModel, {
+  foreignKey: {
+    allowNull: false
+  }
+});
+BannerPurchasedModel.belongsTo(BannerMetaModel)
+
+
 UserModel.hasMany(BannerPurchasedModel, {
   foreignKey: {
     allowNull: false
   }
 });
-
-PaymentModel.belongsTo(BannerPurchasedModel);
+BannerPurchasedModel.belongsTo(UserModel)
 
 module.exports = BannerPurchasedModel
