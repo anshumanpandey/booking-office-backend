@@ -47,6 +47,7 @@ router.post('/banners-payment', AsyncMiddleware(async (req, res) => {
     await BannerMetaPurchasedModel.bulkCreate(req.body.selectedLocations.map((l, idx, arr) => {
       const currentBannerMetadata = bannersToUpdate.find(currentBanner => currentBanner.id == l.id)
       if (!currentBannerMetadata) throw new Error("We could not find the banner.")
+      if (currentBannerMetadata.availableAmount <= 0) throw new Error("No banners available")
 
       const isFilled = currentBannerMetadata.BannerPurchaseds.some(purchasedBanner => {
         const availableFromDate = moment(purchasedBanner.availableFromDate)
