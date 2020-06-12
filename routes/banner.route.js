@@ -62,8 +62,8 @@ router.post('/banners-payment', AsyncMiddleware(async (req, res) => {
       if (isFilled) throw new Error("The selected date range is already used")
 
 
-      const availableFromDate = moment.unix(l.fromDate).utc();
-      const availableToDate = moment.unix(l.toDate).utc();
+      const availableFromDate = moment.unix(l.fromDate).utc().startOf('day');
+      const availableToDate = moment.unix(l.toDate).utc().endOf('day');
 
       if (availableFromDate.isAfter(availableToDate)) throw new Error('Start date cannot be after end date');
       if (availableToDate.isBefore(availableFromDate)) throw new Error('End date cannot be before start date');
