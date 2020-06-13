@@ -71,8 +71,8 @@ router.post('/banners-payment', AsyncMiddleware(async (req, res) => {
         paypalOrderId: req.body.orderId,
         UserId: req.user.id,
         BannerMetumId: l.id,
-        desktopBannerFileName: randomDesktopName,
-        mobileBannerFileName: randomMobileName,
+        desktopBannerFileName: `${randomDesktopName}.${req.files["desktopImage"].mimetype.split('/')[1]}`,
+        mobileBannerFileName: `${randomMobileName}.${req.files["mobileImage"].mimetype.split('/')[1]}`,
         urlToOpen: req.body.urlToOpen,
       }
 
@@ -84,8 +84,8 @@ router.post('/banners-payment', AsyncMiddleware(async (req, res) => {
     const paymentData = { orderId: req.body.orderId, UserId: req.user.id, amount: order.result.purchase_units[0].amount.value, buyedItem: 'Ads' }
     const createdPayment = await PaymentModel.create(paymentData, { transaction: t });
 
-    await req.files["desktopImage"].mv(`./banners/${randomDesktopName}.png`);
-    await req.files["mobileImage"].mv(`./banners/${randomMobileName}.png`);
+    await req.files["desktopImage"].mv(`./banners/${randomDesktopName}.${req.files["desktopImage"].mimetype.split('/')[1] || 'png'}`);
+    await req.files["mobileImage"].mv(`./banners/${randomMobileName}.${req.files["mobileImage"].mimetype.split('/')[1] || 'png'}`);
 
 
     res.send(createdPayment);
