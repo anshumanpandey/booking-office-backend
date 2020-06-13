@@ -22,13 +22,13 @@ router.post('/banners-payment', AsyncMiddleware(async (req, res) => {
   if (mobileDimensions.width !== 1382, mobileDimensions.height !== 200) throw new Error("Mobile image must be of a size of 1382*200");
 
   //TEST credentials
-  const CLIENT_ID = 'AcDoYg60CAk48yIdgpLTKR8h99G9sdv_Xmdg8jzd8HTla_01m29inTc7d-kT5MdRwYcnpq5GmrdXbt4A';
+  /*const CLIENT_ID = 'AcDoYg60CAk48yIdgpLTKR8h99G9sdv_Xmdg8jzd8HTla_01m29inTc7d-kT5MdRwYcnpq5GmrdXbt4A';
   const CLIENT_SECRET = 'ENs8H1feFUXDKdKOf3WZbqpFOempJlLR13ntsM7VwzuaJIzK-aRuRh_z9yVS2zuCldnTDyj19elOdZFO';
-  const enviroment = new checkoutNodeJssdk.core.SandboxEnvironment(CLIENT_ID, CLIENT_SECRET)
+  const enviroment = new checkoutNodeJssdk.core.SandboxEnvironment(CLIENT_ID, CLIENT_SECRET)*/
 
-  /*const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
+  const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
   const CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
-  const enviroment = new checkoutNodeJssdk.core.LiveEnvironment(CLIENT_ID, CLIENT_SECRET)*/
+  const enviroment = new checkoutNodeJssdk.core.LiveEnvironment(CLIENT_ID, CLIENT_SECRET)
 
   const payPalClient = new checkoutNodeJssdk.core.PayPalHttpClient(enviroment);
 
