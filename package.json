@@ -32,6 +32,7 @@
     "express-jwt-permissions": "^1.3.3",
     "generate-password": "^1.5.1",
     "hybrid-crypto-js": "^0.2.2",
+    "image-size": "^0.8.3",
     "is-json": "^2.0.1",
     "json2xml": "0.1.3",
     "jsonwebtoken": "^8.5.1",
@@ -43,6 +44,7 @@
     "promise.allsettled": "^1.0.2",
     "querystring": "^0.2.0",
     "sequelize": "^5.21.5",
+    "uuid": "^8.1.0",
     "xml-js": "^1.6.11",
     "xmlbuilder2": "^2.1.2"
   },

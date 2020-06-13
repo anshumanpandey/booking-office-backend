@@ -24,7 +24,10 @@ app.use(function(req, res, next) {
   next();
 });
 app.use(cors())
-app.use(fileUpload());
+app.use(fileUpload({
+  parseNested: true,
+  useTempFiles : true,
+}));
 const routesToByPass = [
   '/api/facebook', '/api/instagram', '/api/login',
   '/api/public/visitor/save','/api/public/visitor/get',
@@ -34,6 +37,7 @@ const routesToByPass = [
   new RegExp(`categories/(${Offerings.join('|')})`)
 ];
 app.use(express.static(path.join(__dirname, 'bookingclik-backoffice', '_site')));
+app.use(express.static(path.join(__dirname, 'banners')));
 app.use('/api/public/upload', express.static(path.join(__dirname, 'upload')));
 // to support URL-encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));
