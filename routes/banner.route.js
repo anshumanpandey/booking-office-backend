@@ -5,14 +5,21 @@ const AsyncMiddleware = require('../utils/AsyncMiddleware');
 const BannerMetaPurchasedModel = require('../model/BannerMetaPurchasedModel');
 const BannerMetaModel = require('../model/BannerMetaModel');
 const PaymentModel = require('../model/PaymentsModel');
-const UserModel = require('../model/UserModel');
+const { v4: uuidv4 } = require('uuid');
 const checkoutNodeJssdk = require('@paypal/checkout-server-sdk');
 const sequelize = require('../utils/Database');
+const Op = require('sequelize').Op;
+const sizeOf = require('image-size');
 
 router.post('/banners-payment', AsyncMiddleware(async (req, res) => {
   if (!req.body.orderId) throw new Error("Missing param");
   if (!req.body.selectedLocations) throw new Error("Missing param");
   let request = new checkoutNodeJssdk.orders.OrdersGetRequest(req.body.orderId);
+
+  const desktopDimensions = sizeOf(`${req.files["desktopImage"].tempFilePath}`);
+  if (desktopDimensions.width !== 160, desktopDimensions.height !== 600) throw new Error("Desktop image must be of a size of 160*600");
+  const mobileDimensions = sizeOf(`${req.files["mobileImage"].tempFilePath}`);
+  if (mobileDimensions.width !== 1382, mobileDimensions.height !== 200) throw new Error("Mobile image must be of a size of 1382*200");
 
   //TEST credentials
   const CLIENT_ID = 'AcDoYg60CAk48yIdgpLTKR8h99G9sdv_Xmdg8jzd8HTla_01m29inTc7d-kT5MdRwYcnpq5GmrdXbt4A';
@@ -36,34 +43,25 @@ router.post('/banners-payment', AsyncMiddleware(async (req, res) => {
 
   await sequelize.transaction(async (t) => {
     const bannersToUpdate = await BannerMetaModel
-      .findAll({
-        where: { id: req.body.selectedLocations.map(l => l.id) }, include: [
-          {
-            model: BannerMetaPurchasedModel,
-            attributes: ['availableFromDate', 'availableToDate'],
-          }
-        ], transaction: t
-      });
+    .findAll({
+      where: { id: req.body.selectedLocations.map(l => l.id) }, include: [
+        {
+          model: BannerMetaPurchasedModel,
+          attributes: ['availableFromDate', 'availableToDate'],
+        }
+      ], transaction: t
+    });
+
+    const randomDesktopName = uuidv4();
+    const randomMobileName = uuidv4();
+
     await BannerMetaPurchasedModel.bulkCreate(req.body.selectedLocations.map((l, idx, arr) => {
       const currentBannerMetadata = bannersToUpdate.find(currentBanner => currentBanner.id == l.id)
       if (!currentBannerMetadata) throw new Error("We could not find the banner.")
       if (currentBannerMetadata.availableAmount <= 0) throw new Error("No banners available")
 
-      const isFilled = currentBannerMetadata.BannerPurchaseds.some(purchasedBanner => {
-        const availableFromDate = moment(purchasedBanner.availableFromDate)
-        const availableToDate = moment(purchasedBanner.availableToDate)
-        const isBetween = moment.unix(l.fromDate).utc().isBetween(availableFromDate, availableToDate, undefined, '[]') ||
-          moment.unix(l.toDate).utc().isBetween(availableFromDate, availableToDate, undefined, '[]');
-        const isInside = availableFromDate.isBetween(l.fromDate, l.toDate, undefined, '[]') ||
-          availableToDate.isBetween(l.fromDate, l.toDate, undefined, '[]');
-        return (isBetween || isInside)
-      })
-
-      if (isFilled) throw new Error("The selected date range is already used")
-
-
-      const availableFromDate = moment.unix(l.fromDate).utc();
-      const availableToDate = moment.unix(l.toDate).utc();
+      const availableFromDate = moment.unix(l.fromDate).utc().startOf('day');
+      const availableToDate = moment.unix(l.toDate).utc().endOf('day');
 
       if (availableFromDate.isAfter(availableToDate)) throw new Error('Start date cannot be after end date');
       if (availableToDate.isBefore(availableFromDate)) throw new Error('End date cannot be before start date');
@@ -73,7 +71,10 @@ router.post('/banners-payment', AsyncMiddleware(async (req, res) => {
         availableToDate: availableToDate.toDate(),
         paypalOrderId: req.body.orderId,
         UserId: req.user.id,
-        BannerMetumId: l.id
+        BannerMetumId: l.id,
+        desktopBannerFileName: `${randomDesktopName}.${req.files["desktopImage"].mimetype.split('/')[1]}`,
+        mobileBannerFileName: `${randomMobileName}.${req.files["mobileImage"].mimetype.split('/')[1]}`,
+        urlToOpen: req.body.urlToOpen,
       }
 
       return data;
@@ -83,6 +84,10 @@ router.post('/banners-payment', AsyncMiddleware(async (req, res) => {
 
     const paymentData = { orderId: req.body.orderId, UserId: req.user.id, amount: order.result.purchase_units[0].amount.value, buyedItem: 'Ads' }
     const createdPayment = await PaymentModel.create(paymentData, { transaction: t });
+
+    await req.files["desktopImage"].mv(`./banners/${randomDesktopName}.${req.files["desktopImage"].mimetype.split('/')[1] || 'png'}`);
+    await req.files["mobileImage"].mv(`./banners/${randomMobileName}.${req.files["mobileImage"].mimetype.split('/')[1] || 'png'}`);
+
 
     res.send(createdPayment);
   })
@@ -107,6 +112,29 @@ router.get('/banner/get', AsyncMiddleware(async (req, res) => {
     }
   })
   res.send(toSend);
+}));
+
+router.get('/public/banner/random', AsyncMiddleware(async (req, res) => {
+  if (!req.query.locationCode) throw new Error("Missing code");
+  const data = await BannerMetaPurchasedModel.findAll({
+    attributes: ['desktopBannerFileName', 'mobileBannerFileName', 'urlToOpen'],
+    where: {
+      availableFromDate: {
+        [Op.lte]: moment().utc().startOf('day').toDate()
+      },
+      availableToDate: {
+        [Op.gte]: moment().utc().endOf('day').toDate()
+      },
+    },
+    include: [{
+      model: BannerMetaModel,
+      attributes: ['locationName'],
+      where: {
+          locationCode: req.query.locationCode,
+      }
+  }]
+  })
+  res.send(data[Math.floor(Math.random()*data.length)]);
 }));
 
 

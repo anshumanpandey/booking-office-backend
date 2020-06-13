@@ -20,6 +20,21 @@ const BannerPurchasedModel = sequelize.define('BannerPurchased', {
     allowNull: true,
     require: false,
   },
+  urlToOpen: {
+    type: Sequelize.STRING,
+    allowNull: true,
+    require: false,
+  },
+  desktopBannerFileName: {
+    type: Sequelize.STRING,
+    allowNull: true,
+    require: false,
+  },
+  mobileBannerFileName: {
+    type: Sequelize.STRING,
+    allowNull: true,
+    require: false,
+  },
 }, { timestamps: true });
 
 BannerMetaModel.hasMany(BannerPurchasedModel, {

@@ -6,3 +6,7 @@ server.key
 /upload/*.jpg
 .env
 .vscode
+tmp/*
+banners/*.png
+banners/*.jpg
+banners/*.jpeg
