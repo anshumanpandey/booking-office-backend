@@ -53,7 +53,7 @@ router.post('/public/click', AsyncMiddleware(async (req, res) => {
         dropoffLocation,
       }
       await ClickTrackModel.create(data, { transaction: t });
-      await user.update({credits: new Decimal(user.credits).minus(user.costPerClick), balance: new Decimal(user.balance).minus(user.costPerClick) }, { transaction: t });
+      await user.update({credits: new Decimal(user.credits).minus(1), balance: new Decimal(user.balance).minus(user.costPerClick) }, { transaction: t });
     } else {
       throw new Error("Service not available");
     }
