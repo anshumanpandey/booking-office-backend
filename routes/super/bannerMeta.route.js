@@ -46,11 +46,12 @@ axios.default({
     return BannerMetaModel.bulkCreate(toSave.map(l => {
         return {
             locationName: l.locationname,
+            locationCode: l.internalcode,
             availableAmount: 6,
             country: l.country,
             price: l.locationname.toLowerCase().match(/(airport)/) ? 5 : 2,
         }
-    }));
+    }), { updateOnDuplicate: ["locationCode"] });
 })
 .then((r) => {
     console.log(`${r.length} new codes imported`)

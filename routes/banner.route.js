@@ -8,6 +8,7 @@ const PaymentModel = require('../model/PaymentsModel');
 const { v4: uuidv4 } = require('uuid');
 const checkoutNodeJssdk = require('@paypal/checkout-server-sdk');
 const sequelize = require('../utils/Database');
+const Op = require('sequelize').Op;
 const sizeOf = require('image-size');
 
 router.post('/banners-payment', AsyncMiddleware(async (req, res) => {
@@ -111,6 +112,29 @@ router.get('/banner/get', AsyncMiddleware(async (req, res) => {
     }
   })
   res.send(toSend);
+}));
+
+router.get('/public/banner/random', AsyncMiddleware(async (req, res) => {
+  if (!req.query.locationCode) throw new Error("Missing code");
+  const data = await BannerMetaPurchasedModel.findAll({
+    attributes: ['desktopBannerFileName', 'mobileBannerFileName', 'urlToOpen'],
+    where: {
+      availableFromDate: {
+        [Op.lte]: moment().utc().startOf('day').toDate()
+      },
+      availableToDate: {
+        [Op.gte]: moment().utc().endOf('day').toDate()
+      },
+    },
+    include: [{
+      model: BannerMetaModel,
+      attributes: ['locationName'],
+      where: {
+          locationCode: req.query.locationCode,
+      }
+  }]
+  })
+  res.send(data[Math.floor(Math.random()*data.length)]);
 }));
 
 

@@ -30,7 +30,7 @@ app.use(fileUpload({
 }));
 const routesToByPass = [
   '/api/facebook', '/api/instagram', '/api/login',
-  '/api/public/visitor/save','/api/public/visitor/get',
+  '/api/public/visitor/save', '/api/public/banner/random','/api/public/visitor/get',
   /static/, '/api/', '/api/register', '/api/test',
   '/api/search', '/api/getiatacodes', '/api/super/blacklist/all',
   '/api/brokers/importer', '/api/public/click',RegExp('/api/public/*'),
