@@ -41,7 +41,7 @@ router.post('/super/client', guard.check('super_admin'), AsyncMiddleware(async (
   delete req.body.balance
   delete req.body.credits
 
-  await UserModel.create({ password: await UserModel.generateHash(password), ...req.body});
+  await UserModel.create({ ...req.body, password: await UserModel.generateHash(password)});
 
   res.send({ sucess: "Supplier created"});
 }));
