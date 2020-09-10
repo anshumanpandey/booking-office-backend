@@ -6,6 +6,11 @@ const guard = require('express-jwt-permissions')({ permissionsProperty: 'type' }
 const { v4: uuidv4 } = require('uuid');
 const sequelize = require('../../utils/Database');
 
+router.get('/public/top-locations/get', AsyncMiddleware(async (req, res) => {
+    const data = await TopLocationModel.findAll();
+    res.send(data);
+}));
+
 router.get('/top-locations/get', guard.check([['super_admin']]), AsyncMiddleware(async (req, res) => {
     const data = await TopLocationModel.findAll();
     res.send(data);
