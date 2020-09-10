@@ -22,7 +22,7 @@ router.post('/top-locations/save', guard.check('super_admin'), AsyncMiddleware(a
         const fileName = `${randomDesktopName}.${req.files["img"].mimetype.split('/')[1] || 'png'}`;
         await req.files["img"].mv(`./locationimgs/${fileName}`);
 
-        await TopLocationModel.create({ name: req.body.name, imagePath: `${req.protocol + '://' + req.get('host')}/locationimgs/${fileName}` }, { transaction })
+        await TopLocationModel.create({ name: req.body.name, imagePath: `${`https://www.bookingclik.com/preview/locationimgs/${fileName}` }, { transaction })
 
         res.send({});
     })
