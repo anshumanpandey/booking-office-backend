@@ -36,6 +36,7 @@ const routesToByPass = [
   '/api/brokers/importer', '/api/public/click',RegExp('/api/public/*'),
   new RegExp(`categories/(${Offerings.join('|')})`)
 ];
+app.use("/locationimgs",express.static(path.join(__dirname, 'locationimgs')));
 app.use(express.static(path.join(__dirname, 'bookingclik-backoffice', '_site')));
 app.use(express.static(path.join(__dirname, 'banners')));
 app.use('/api/public/upload', express.static(path.join(__dirname, 'upload')));

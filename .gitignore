@@ -10,3 +10,6 @@ tmp/*
 banners/*.png
 banners/*.jpg
 banners/*.jpeg
+locationimgs/*.png
+locationimgs/*.jpg
+locationimgs/*.jpeg
