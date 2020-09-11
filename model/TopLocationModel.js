@@ -11,7 +11,7 @@ const TopLocation = sequelize.define('TopLocation', {
   },
   imagePath: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
 }, { timestamps: false });
 

@@ -78,7 +78,7 @@ let port = process.env.PORT || 4010;
 
 db
   .authenticate()
-  .then(() => BannerMetaPurchasedModel.sync())
+  //.then(() => BannerMetaPurchasedModel.sync())
   .then(() => {
     app.listen(port, '0.0.0.0', () => console.log('App listening on port ' + port))
 

@@ -36,14 +36,15 @@ router.post('/top-locations/save', guard.check('super_admin'), AsyncMiddleware(a
             await TopLocationModel.update(newData, { where: { id: req.body.id },transaction })
 
         } else {
-            if (!req.files["img"]) throw new Error("Missing file")
             if (!req.body.name) throw new Error("Missing name")
 
-            const randomDesktopName = uuidv4();
-            const fileName = `${randomDesktopName}.${req.files["img"].mimetype.split('/')[1] || 'png'}`;
-            await req.files["img"].mv(`./locationimgs/${fileName}`);
+            if (req.files["img"]) {
+                const randomDesktopName = uuidv4();
+                const fileName = `${randomDesktopName}.${req.files["img"].mimetype.split('/')[1] || 'png'}`;
+                await req.files["img"].mv(`./locationimgs/${fileName}`);
+            }
 
-            await TopLocationModel.create({ name: req.body.name, imagePath: `https://www.bookingclik.com/locationimgs/${fileName}` }, { transaction })
+            await TopLocationModel.create({ name: req.body.name, /*imagePath: `https://www.bookingclik.com/locationimgs/${fileName}`*/ }, { transaction })
         }
 
         res.send({});
