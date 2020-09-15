@@ -3,8 +3,15 @@ const router = express.Router();
 const AsyncMiddleware = require('../../utils/AsyncMiddleware');
 const ValuatedLocation = require('../../model/ValuatedLocation');
 const guard = require('express-jwt-permissions')({ permissionsProperty: 'type' });
-const { v4: uuidv4 } = require('uuid');
 const sequelize = require('../../utils/Database');
+const { Op } = require('sequelize');
+
+router.get('/public/valuated-locations/get', AsyncMiddleware(async (req, res) => {
+    const from = req.query.from
+    const to = req.query.to
+    const data = await ValuatedLocation.findAll({ where: { value: { [Op.between]: [parseInt(from), parseInt(to)] }}});
+    res.send(data);
+}));
 
 router.get('/valuated-locations/get', guard.check([['super_admin']]), AsyncMiddleware(async (req, res) => {
     const data = await ValuatedLocation.findAll();
