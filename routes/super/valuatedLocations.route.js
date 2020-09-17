@@ -13,6 +13,11 @@ router.get('/public/valuated-locations/get', AsyncMiddleware(async (req, res) =>
     res.send(data);
 }));
 
+router.get('/public/valuated-locations/byName', AsyncMiddleware(async (req, res) => {
+    const data = await ValuatedLocation.findOne({ where: { name: { name: req.query.name }}});
+    res.send(data);
+}));
+
 router.get('/valuated-locations/get', guard.check([['super_admin']]), AsyncMiddleware(async (req, res) => {
     const data = await ValuatedLocation.findAll();
     res.send(data);
