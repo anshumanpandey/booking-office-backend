@@ -9,7 +9,7 @@ const { Op } = require('sequelize');
 router.get('/public/valuated-locations/get', AsyncMiddleware(async (req, res) => {
     const from = req.query.from
     const to = req.query.to
-    const data = await ValuatedLocation.findAll({ where: { value: { [Op.between]: [parseInt(from), parseInt(to)] }}});
+    const data = await ValuatedLocation.findAll({ where: { name: { [Op.between]: [parseInt(from), parseInt(to)] }}});
     res.send(data);
 }));
 
