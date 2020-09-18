@@ -14,7 +14,7 @@ router.get('/public/valuated-locations/get', AsyncMiddleware(async (req, res) =>
 }));
 
 router.get('/public/valuated-locations/byName', AsyncMiddleware(async (req, res) => {
-    const data = await ValuatedLocation.findOne({ where: { name: { name: req.query.name }}});
+    const data = await ValuatedLocation.findOne({ where: { name: req.query.name }});
     res.send(data);
 }));
 
